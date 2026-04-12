@@ -74,3 +74,6 @@ A good architecture allows you to:
 - Build systems that are stable and long-lasting  
 
 ---
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/a0a0e865-1aa4-46e8-b97e-89efaa3128a1" width="500"/>
+</p>
