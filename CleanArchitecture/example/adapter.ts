@@ -1,11 +1,11 @@
 /*
 Client (Postman / Frontend)
         ↓
-Controller (Express)
+Controller (Express) (Adapter) input
         ↓
 UseCase (Business Logic)
         ↓
-PaymentServiceImpl (Adapter)
+PaymentServiceImpl (Adapter) output
         ↓
 External API (Payment Gateway)
 */
@@ -104,7 +104,7 @@ class PaymentServiceImpl implements PaymentService {
 
 /**
  * =========================
- * INTERFACE LAYER (CONTROLLER)
+ * INTERFACE LAYER (CONTROLLER)/ Adapter
  * =========================
  */
 
