@@ -59,7 +59,7 @@ export class UserGatewayImpl extends UserGateway {
 
     const [rows] = await this.db.execute(query, [date]);
 
-    // 🔥 DATA MAPPER (manual)
+    // DATA MAPPER (manual)
     return rows.map(mapRowToUser);
   }
 }
