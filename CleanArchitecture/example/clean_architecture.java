@@ -1,16 +1,17 @@
-📦 Project Structure
-src/
-└── com/mycompany/orders/
-    ├── domain/
-    │   ├── Order.java
-    │   └── Orders.java
-    ├── usecase/
-    │   └── ViewOrdersUseCase.java
-    ├── infrastructure/
-    │   └── JdbcOrdersRepository.java
-    └── OrdersComponent.java
+// 📦 Project Structure
+// src/
+// └── com/mycompany/orders/
+//     ├── domain/
+//     │   ├── Order.java
+//     │   └── Orders.java
+//     ├── usecase/
+//     │   └── ViewOrdersUseCase.java
+//     ├── infrastructure/
+//     │   └── JdbcOrdersRepository.java
+//     └── OrdersComponent.java
 
-🧾 1️⃣ domain/Order.java
+// 🧾 1️⃣ domain/Order.java
+    
 package com.mycompany.orders.domain;
 
 public class Order {
@@ -35,7 +36,7 @@ public class Order {
     }
 }
 
-🧾 2️⃣ domain/Orders.java (interface)
+// 🧾 2️⃣ domain/Orders.java (interface)
 package com.mycompany.orders.domain;
 
 // Abstraction (PORT)
@@ -43,7 +44,7 @@ public interface Orders {
     Order findById(String id);
 }
 
-🧾 3️⃣ usecase/ViewOrdersUseCase.java
+// 🧾 3️⃣ usecase/ViewOrdersUseCase.java
 package com.mycompany.orders.usecase;
 
 import com.mycompany.orders.domain.Order;
@@ -63,7 +64,7 @@ class ViewOrdersUseCase {
     }
 }
 
-🧾 4️⃣ infrastructure/JdbcOrdersRepository.java
+// 🧾 4️⃣ infrastructure/JdbcOrdersRepository.java
 package com.mycompany.orders.infrastructure;
 
 import com.mycompany.orders.domain.Order;
@@ -80,7 +81,7 @@ class JdbcOrdersRepository implements Orders {
     }
 }
 
-🧾 5️⃣ OrdersComponent.java (🔥 ENTRY POINT)
+// 🧾 5️⃣ OrdersComponent.java (🔥 ENTRY POINT)
 package com.mycompany.orders;
 
 import com.mycompany.orders.domain.Order;
@@ -103,7 +104,7 @@ public class OrdersComponent {
     }
 }
 
-🧾 6️⃣ Example Usage (Main.java)
+// 🧾 6️⃣ Example Usage (Main.java)
 package com.mycompany;
 
 import com.mycompany.orders.OrdersComponent;
