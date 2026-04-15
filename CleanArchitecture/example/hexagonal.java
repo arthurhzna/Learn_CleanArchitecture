@@ -1,17 +1,29 @@
-// 📦 Project Structure
-// src/
-// └── com/mycompany/orders/
-//     ├── domain/
-//     │   ├── Order.java
-//     │   └── Orders.java
-//     ├── usecase/
-//     │   └── ViewOrdersUseCase.java
-//     ├── infrastructure/
-//     │   └── JdbcOrdersRepository.java
-//     └── OrdersComponent.java
+// ==========================================
+// HEXAGONAL ARCHITECTURE (FULL EXAMPLE)
+// ==========================================
 
-// 🧾 1️⃣ domain/Order.java
-    
+// hexagonal-architecture-java-example/
+// └── src/
+//     └── com/mycompany/
+//         ├── Main.java
+//         └── orders/
+//             ├── domain/
+//             │   ├── Order.java
+//             │   └── Orders.java
+//             │
+//             ├── usecase/
+//             │   └── ViewOrdersUseCase.java
+//             │
+//             ├── infrastructure/
+//             │   ├── JdbcOrdersRepository.java
+//             │   └── InMemoryOrdersRepository.java
+//             │
+//             └── web/
+//                 └── OrdersController.java
+
+// =======================
+// DOMAIN (CORE)
+// =======================
 package com.mycompany.orders.domain;
 
 public class Order {
@@ -36,88 +48,129 @@ public class Order {
     }
 }
 
-// 🧾 2️⃣ domain/Orders.java (interface)
+// PORT (OUTPUT PORT)
 package com.mycompany.orders.domain;
 
-// Abstraction (PORT)
 public interface Orders {
     Order findById(String id);
 }
 
-// 🧾 3️⃣ usecase/ViewOrdersUseCase.java
+// =======================
+// USE CASE (APPLICATION)
+// =======================
 package com.mycompany.orders.usecase;
 
 import com.mycompany.orders.domain.Order;
 import com.mycompany.orders.domain.Orders;
 
-// Package-private (not public)
-class ViewOrdersUseCase {
+// Application Service
+public class ViewOrdersUseCase {
 
     private final Orders orders;
 
-    ViewOrdersUseCase(Orders orders) {
+    public ViewOrdersUseCase(Orders orders) {
         this.orders = orders;
     }
 
-    Order execute(String id) {
+    public Order execute(String id) {
         return orders.findById(id);
     }
 }
 
-// 🧾 4️⃣ infrastructure/JdbcOrdersRepository.java
+// =======================
+// INFRASTRUCTURE (ADAPTERS)
+// =======================
+
+// Adapter 1: Database (JDBC)
 package com.mycompany.orders.infrastructure;
 
 import com.mycompany.orders.domain.Order;
 import com.mycompany.orders.domain.Orders;
 
-// Package-private → cannot be accessed outside the component
-class JdbcOrdersRepository implements Orders {
+public class JdbcOrdersRepository implements Orders {
 
     @Override
     public Order findById(String id) {
-        // Simulate database access
-        System.out.println("Fetching order from database...");
+        System.out.println("[DB] Fetching order...");
         return new Order(id, "SHIPPED");
     }
 }
 
-// 🧾 5️⃣ OrdersComponent.java (🔥 ENTRY POINT)
-package com.mycompany.orders;
+// Adapter 2: In-Memory (for testing)
+package com.mycompany.orders.infrastructure;
 
 import com.mycompany.orders.domain.Order;
 import com.mycompany.orders.domain.Orders;
-import com.mycompany.orders.infrastructure.JdbcOrdersRepository;
-import com.mycompany.orders.usecase.ViewOrdersUseCase;
 
-// ✅ THE ONLY PUBLIC CLASS (Component Boundary)
-public class OrdersComponent {
+import java.util.HashMap;
+import java.util.Map;
 
-    private final ViewOrdersUseCase useCase;
+public class InMemoryOrdersRepository implements Orders {
 
-    public OrdersComponent() {
-        Orders repository = new JdbcOrdersRepository();
-        this.useCase = new ViewOrdersUseCase(repository);
+    private final Map<String, Order> db = new HashMap<>();
+
+    public InMemoryOrdersRepository() {
+        db.put("1", new Order("1", "PENDING"));
+        db.put("2", new Order("2", "SHIPPED"));
     }
 
-    public Order getOrder(String id) {
-        return useCase.execute(id);
+    @Override
+    public Order findById(String id) {
+        System.out.println("[MEMORY] Fetching order...");
+        return db.getOrDefault(id, new Order(id, "UNKNOWN"));
     }
 }
 
-// 🧾 6️⃣ Example Usage (Main.java)
-package com.mycompany;
+// =======================
+// DRIVER (INPUT ADAPTER)
+// =======================
+package com.mycompany.orders.web;
 
-import com.mycompany.orders.OrdersComponent;
 import com.mycompany.orders.domain.Order;
+import com.mycompany.orders.usecase.ViewOrdersUseCase;
 
-public class Main {
-    public static void main(String[] args) {
+public class OrdersController {
 
-        OrdersComponent orders = new OrdersComponent();
+    private final ViewOrdersUseCase useCase;
 
-        Order order = orders.getOrder("123");
+    public OrdersController(ViewOrdersUseCase useCase) {
+        this.useCase = useCase;
+    }
+
+    public void getOrder(String id) {
+        Order order = useCase.execute(id);
 
         System.out.println("Order ID: " + order.getId());
         System.out.println("Status: " + order.getStatus());
+    }
+}
+
+// =======================
+// APPLICATION BOOTSTRAP
+// =======================
+package com.mycompany;
+
+import com.mycompany.orders.infrastructure.InMemoryOrdersRepository;
+import com.mycompany.orders.infrastructure.JdbcOrdersRepository;
+import com.mycompany.orders.domain.Orders;
+import com.mycompany.orders.usecase.ViewOrdersUseCase;
+import com.mycompany.orders.web.OrdersController;
+
+public class Main {
+
+    public static void main(String[] args) {
+
+        // 🔁 SWITCH ADAPTER HERE
+        // Orders repository = new JdbcOrdersRepository();
+        Orders repository = new InMemoryOrdersRepository();
+
+        // Inject dependency
+        ViewOrdersUseCase useCase = new ViewOrdersUseCase(repository);
+
+        // Controller (driver)
+        OrdersController controller = new OrdersController(useCase);
+
+        // Simulate request
+        controller.getOrder("1");
     }
 }
