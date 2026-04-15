@@ -1,8 +1,3 @@
-// ==========================================
-// HEXAGONAL ARCHITECTURE (FULL EXAMPLE)
-// ==========================================
-
-// hexagonal-architecture-java-example/
 // └── src/
 //     └── com/mycompany/
 //         ├── Main.java
